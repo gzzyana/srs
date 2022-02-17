@@ -1199,11 +1199,7 @@ contract SRSFarm is Ownable, ReentrancyGuard {
         }
 
         if (_wantAmt > 0) {
-            if (_wantAmt > user.shares) {
-                user.shares = 0;
-            } else {
-                user.shares = user.shares.sub(_wantAmt);
-            }
+            user.shares = user.shares.sub(_wantAmt);
 
             uint256 wantBal = IERC20(pool.want).balanceOf(address(this));
             if (wantBal < _wantAmt) {
@@ -1220,6 +1216,7 @@ contract SRSFarm is Ownable, ReentrancyGuard {
 
         uint256 balance = IERC20(SRS).balanceOf(msg.sender);
         if (maxHoldAmountOpen && (balance.add(pending) > maxHoldAmount) && !SRSContract.isExcludedFromFee(msg.sender)){
+            require(balance <= maxHoldAmount, "balance can not big than maxHoldAmount");
             uint256 amount = maxHoldAmount.sub(balance);
             userUnClaimAmount[msg.sender] += pending.sub(amount);
             safeSRSTransfer(msg.sender, amount);
